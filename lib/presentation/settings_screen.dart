@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'bluetooth_screen.dart';
+import 'package:multinova/presentation/sensor_data_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -39,6 +40,18 @@ class SettingsScreen extends StatelessWidget {
                         ),
                       ),
                 ),
+                // _buildSettingsTile(
+                //   context,
+                //   icon: Icons.notifications,
+                //   title: "Data Sensores",
+                //  onTap:
+                //       () => Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //           builder: (context) => SensorDataScreen(),
+                //         ),
+                //       ),
+                // ),
               ],
             ),
           ),
