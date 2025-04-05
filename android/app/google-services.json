@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "774772222891",
+    "firebase_url": "https://app-multinova-default-rtdb.firebaseio.com",
+    "project_id": "app-multinova",
+    "storage_bucket": "app-multinova.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:774772222891:android:4f6529dfb9e0b38373c0ee",
+        "android_client_info": {
+          "package_name": "com.example.multinova"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArWiyYUBtYd2qZ0R7sDrOD5SZP0tImEnM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
