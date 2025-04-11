@@ -10,11 +10,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => BluetoothProvider(),
-        ), // BluetoothProvider correctamente definido
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => BluetoothProvider())],
       child: MyApp(),
     ),
   );
@@ -24,9 +20,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Multinova',
       theme: ThemeData(primarySwatch: Colors.green),
-      home: HomeScreen(), // Pantalla principal con el BottomNavigationBar
+      home: HomeScreen(),
     );
   }
 }
