@@ -5,61 +5,101 @@ class AddPlantScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final samplePlants = [
+      'Aloe Vera',
+      'Lavanda',
+      'Suculenta',
+      'Helecho',
+      'Menta',
+      'Romero',
+    ];
+
     return Scaffold(
+      backgroundColor: const Color(0xFFF6F6F6),
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0.5,
+        centerTitle: true,
         title: const Text(
           'Agregar Planta',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        backgroundColor: Colors.blue[700],
-        automaticallyImplyLeading: false,
-        elevation: 4,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: Container(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Card(
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Nombre de la planta',
-                      labelStyle: TextStyle(color: Colors.blue[700]),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue[700]!),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[700],
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 15,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: () {},
-                    child: const Text(
-                      'Guardar',
-                      style: TextStyle(fontSize: 18),
-                    ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// BUSCADOR
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: Offset(0, 2),
                   ),
                 ],
               ),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: const TextField(
+                decoration: InputDecoration(
+                  hintText: 'Buscar planta...',
+                  border: InputBorder.none,
+                  icon: Icon(Icons.search, color: Colors.grey),
+                ),
+              ),
             ),
-          ),
+            const SizedBox(height: 20),
+
+            /// LISTA DE PLANTAS (SIN FOTOS)
+            Expanded(
+              child: ListView.builder(
+                itemCount: samplePlants.length,
+                itemBuilder: (context, index) {
+                  final name = samplePlants[index];
+                  return Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 16,
+                      ),
+                      leading: const Icon(
+                        Icons.local_florist_outlined,
+                        color: Color(0xFF4C9A2A),
+                      ),
+                      title: Text(
+                        name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.add_circle_outline,
+                        color: Colors.green[600],
+                      ),
+                      onTap: () {
+                        // Acción al seleccionar planta
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

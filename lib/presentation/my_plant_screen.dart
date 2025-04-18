@@ -40,7 +40,6 @@ class _MyPlantScreenState extends State<MyPlantScreen> {
       context,
       listen: false,
     );
-
     if (!bluetoothProvider.isConnected) {
       setState(() => _connectionStatus = 'Dispositivo no conectado');
       return;
@@ -56,39 +55,23 @@ class _MyPlantScreenState extends State<MyPlantScreen> {
       setState(() => _connectionStatus = 'Descubriendo servicios...');
       final services = await device.discoverServices();
 
-      BluetoothService? uartService;
-      try {
-        uartService = services.firstWhere(
-          (s) =>
-              s.uuid.toString().toLowerCase() ==
-              UART_SERVICE_UUID.toLowerCase(),
-        );
-      } catch (e) {
-        setState(() => _connectionStatus = 'Servicio UART no encontrado');
-        return;
-      }
+      final uartService = services.firstWhere(
+        (s) =>
+            s.uuid.toString().toLowerCase() == UART_SERVICE_UUID.toLowerCase(),
+        orElse: () => throw Exception('Servicio UART no encontrado'),
+      );
 
-      try {
-        _uartRxCharacteristic = uartService.characteristics.firstWhere(
-          (c) =>
-              c.uuid.toString().toLowerCase() ==
-              UART_RX_CHAR_UUID.toLowerCase(),
-        );
-      } catch (e) {
-        setState(() => _connectionStatus = 'Característica RX no encontrada');
-        return;
-      }
+      _uartRxCharacteristic = uartService.characteristics.firstWhere(
+        (c) =>
+            c.uuid.toString().toLowerCase() == UART_RX_CHAR_UUID.toLowerCase(),
+        orElse: () => throw Exception('Característica RX no encontrada'),
+      );
 
-      try {
-        _uartTxCharacteristic = uartService.characteristics.firstWhere(
-          (c) =>
-              c.uuid.toString().toLowerCase() ==
-              UART_TX_CHAR_UUID.toLowerCase(),
-        );
-      } catch (e) {
-        setState(() => _connectionStatus = 'Característica TX no encontrada');
-        return;
-      }
+      _uartTxCharacteristic = uartService.characteristics.firstWhere(
+        (c) =>
+            c.uuid.toString().toLowerCase() == UART_TX_CHAR_UUID.toLowerCase(),
+        orElse: () => throw Exception('Característica TX no encontrada'),
+      );
 
       await _uartTxCharacteristic!.setNotifyValue(true);
       _dataSubscription = _uartTxCharacteristic!.value.listen(
@@ -115,14 +98,14 @@ class _MyPlantScreenState extends State<MyPlantScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Datos actualizados"),
-          backgroundColor: const Color.fromARGB(255, 104, 124, 206),
+          backgroundColor: Colors.green,
         ),
       );
     } catch (e) {
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Error en formato de datos"),
+          content: Text("Error al leer datos"),
           backgroundColor: Colors.red,
         ),
       );
@@ -133,7 +116,7 @@ class _MyPlantScreenState extends State<MyPlantScreen> {
     if (_uartRxCharacteristic == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Bluetooth no configurado correctamente"),
+          content: Text("Bluetooth no configurado"),
           backgroundColor: Colors.red,
         ),
       );
@@ -167,91 +150,102 @@ class _MyPlantScreenState extends State<MyPlantScreen> {
   }
 
   @override
+  void dispose() {
+    _dataSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xfff6f6f6),
       appBar: AppBar(
-        title: Text("Multinova", style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color.fromARGB(255, 104, 124, 206),
-        elevation: 0,
+        backgroundColor: Colors.white,
+        elevation: 0.5,
         centerTitle: true,
+        title: Text(
+          "Mi Planta",
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+        ),
+        iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: Container(
-        color: Colors.grey[100],
-        child: Column(
-          children: [
-            // Header
-            Container(
-              padding: EdgeInsets.all(16),
-              color: const Color.fromARGB(255, 104, 124, 206),
-              child: Row(
-                children: [
-                  Icon(Icons.eco, color: Colors.white, size: 40),
-                  SizedBox(width: 16),
-                  Column(
+      body: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.green[100],
+                  radius: 28,
+                  child: Icon(Icons.eco, size: 28, color: Colors.green[700]),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         _plantName,
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
                       ),
                       Text(
                         _connectionStatus,
-                        style: TextStyle(color: Colors.white.withOpacity(0.9)),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-
-            // Sensor Data
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.all(16),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
                 children: [
                   _buildSensorCard(
-                    icon: Icons.opacity,
-                    title: "Humedad",
-                    value: "${_humidity.toStringAsFixed(1)}%",
-                    color: Colors.blue,
+                    "Humedad",
+                    "${_humidity.toStringAsFixed(1)}%",
+                    Icons.water_drop,
                   ),
-                  SizedBox(height: 12),
                   _buildSensorCard(
-                    icon: Icons.wb_sunny,
-                    title: "Luz",
-                    value: "${_light.toStringAsFixed(1)} lux",
-                    color: Colors.amber,
+                    "Luz",
+                    "${_light.toStringAsFixed(1)} lux",
+                    Icons.wb_sunny,
                   ),
-                  SizedBox(height: 12),
                   _buildSensorCard(
-                    icon: Icons.thermostat,
-                    title: "Temperatura",
-                    value: "${_temperature.toStringAsFixed(1)}°C",
-                    color: Colors.red,
+                    "Temperatura",
+                    "${_temperature.toStringAsFixed(1)}°C",
+                    Icons.thermostat,
                   ),
-                  SizedBox(height: 12),
                   _buildSensorCard(
-                    icon: Icons.science,
-                    title: "PH",
-                    value: _ph.toStringAsFixed(1),
-                    color: Colors.purple,
+                    "pH",
+                    "${_ph.toStringAsFixed(1)}",
+                    Icons.science,
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      floatingActionButton: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        width: double.infinity,
-        child: FloatingActionButton.extended(
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.all(16),
+        child: ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green[600],
+            padding: EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
           onPressed: _isLoading ? null : _takeMeasurements,
-          backgroundColor: const Color.fromARGB(255, 104, 124, 206),
           icon:
               _isLoading
                   ? SizedBox(
@@ -262,62 +256,54 @@ class _MyPlantScreenState extends State<MyPlantScreen> {
                       strokeWidth: 2,
                     ),
                   )
-                  : Icon(Icons.play_arrow),
-          label: Text(_isLoading ? "MEDICIÓN EN CURSO" : "INICIAR MEDICIÓN"),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    );
-  }
-
-  Widget _buildSensorCard({
-    required IconData icon,
-    required String title,
-    required String value,
-    required Color color,
-  }) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: TextStyle(color: Colors.grey[600])),
-                  SizedBox(height: 4),
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+                  : Icon(Icons.play_arrow, color: Colors.white),
+          label: Text(
+            _isLoading ? "Midiendo..." : "Iniciar medición",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );
   }
 
-  @override
-  void dispose() {
-    _dataSubscription?.cancel();
-    super.dispose();
+  Widget _buildSensorCard(String title, String value, IconData icon) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: Colors.green[50],
+            child: Icon(icon, color: Colors.green[600]),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(fontSize: 16, color: Colors.black54),
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

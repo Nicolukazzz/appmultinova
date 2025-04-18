@@ -120,7 +120,6 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     try {
       await device.connect(autoConnect: false);
       await device.discoverServices();
-
       bluetoothProvider.setConnectedDevice(device);
 
       Navigator.pushAndRemoveUntil(
@@ -155,21 +154,28 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.warning_amber, size: 50, color: Colors.amber),
+            Icon(Icons.warning_amber_rounded, size: 60, color: Colors.amber),
             SizedBox(height: 16),
             Text(
               "Permisos insuficientes",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
-            Text(
-              "La aplicación necesita permisos para buscar dispositivos Bluetooth",
-              textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                "La aplicación necesita permisos para buscar dispositivos Bluetooth",
+                textAlign: TextAlign.center,
+              ),
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              child: Text("Otorgar permisos"),
               onPressed: _requestPermissions,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[600],
+                foregroundColor: Colors.white,
+              ),
+              child: Text("Otorgar permisos"),
             ),
           ],
         ),
@@ -183,7 +189,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(),
+            CircularProgressIndicator(color: Colors.green[600]),
             SizedBox(height: 16),
             Text("Buscando dispositivos..."),
           ],
@@ -205,12 +211,22 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
               style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 8),
-            Text(
-              "Asegúrese que los dispositivos están encendidos y visibles",
-              textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                "Asegúrese que los dispositivos estén encendidos y visibles",
+                textAlign: TextAlign.center,
+              ),
             ),
             SizedBox(height: 16),
-            ElevatedButton(child: Text("Reintentar"), onPressed: _startScan),
+            ElevatedButton(
+              onPressed: _startScan,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[600],
+                foregroundColor: Colors.white,
+              ),
+              child: Text("Reintentar"),
+            ),
           ],
         ),
       ),
@@ -223,11 +239,18 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Conexión Bluetooth"),
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        title: const Text(
+          "Conexión Bluetooth",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.green[600],
+        elevation: 4,
         actions: [
           if (bluetoothProvider.isConnected)
-            IconButton(icon: Icon(Icons.close), onPressed: _disconnectDevice),
+            IconButton(
+              icon: Icon(Icons.close, color: Colors.white),
+              onPressed: _disconnectDevice,
+            ),
         ],
       ),
       body: Padding(
@@ -236,11 +259,14 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
           children: [
             if (_statusMessage != null)
               Container(
-                padding: EdgeInsets.all(8),
-                color: Colors.blue[100],
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.green[100],
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Row(
                   children: [
-                    Icon(Icons.info, size: 20),
+                    Icon(Icons.info_outline, size: 20),
                     SizedBox(width: 8),
                     Expanded(child: Text(_statusMessage!)),
                   ],
@@ -260,11 +286,18 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
                   itemBuilder: (context, index) {
                     final device = _devicesList[index];
                     return Card(
-                      margin: EdgeInsets.symmetric(vertical: 4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 4,
                       child: ListTile(
-                        leading: Icon(Icons.bluetooth),
+                        leading: Icon(
+                          Icons.bluetooth,
+                          color: Colors.green[700],
+                        ),
                         title: Text(device.name),
                         subtitle: Text(device.remoteId.toString()),
+                        trailing: Icon(Icons.link, color: Colors.grey[600]),
                         onTap: () => _connectToDevice(device),
                       ),
                     );
@@ -277,9 +310,12 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
       floatingActionButton:
           !bluetoothProvider.isConnected && _hasPermissions
               ? FloatingActionButton(
-                child: Icon(_isScanning ? Icons.hourglass_top : Icons.refresh),
+                child: Icon(
+                  _isScanning ? Icons.hourglass_top : Icons.refresh,
+                  color: Colors.white,
+                ),
                 onPressed: _isScanning ? null : _startScan,
-                backgroundColor: const Color.fromARGB(255, 104, 124, 206),
+                backgroundColor: Colors.green[600],
               )
               : null,
     );

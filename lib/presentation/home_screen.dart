@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'add_plant_screen.dart';
 import 'my_plant_screen.dart';
+import 'add_plant_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -17,27 +17,78 @@ class _HomeScreenState extends State<HomeScreen> {
     SettingsScreen(),
   ];
 
+  final List<IconData> _icons = [
+    Icons.eco_outlined,
+    Icons.add_circle_outline,
+    Icons.settings_outlined,
+  ];
+
+  final List<String> _labels = ['Mi Planta', 'Agregar', 'Ajustes'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        selectedItemColor: Colors.blue[700],
-        unselectedItemColor: Colors.blue[400],
-        backgroundColor: Colors.blue[50],
-        onTap: (index) => setState(() => _currentIndex = index),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.eco), label: 'Mi Planta'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle_outlined),
-            label: 'Agregar',
+      backgroundColor: const Color(0xFFF6F6F6),
+      body: _screens[_currentIndex],
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Configuración',
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(_icons.length, (index) {
+              final isSelected = index == _currentIndex;
+
+              return GestureDetector(
+                onTap: () => setState(() => _currentIndex = index),
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 250),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color:
+                        isSelected
+                            ? Color(0xFF4C9A2A).withOpacity(0.1)
+                            : Colors.transparent,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _icons[index],
+                        color:
+                            isSelected ? Color(0xFF4C9A2A) : Colors.grey[500],
+                        size: 26,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        _labels[index],
+                        style: TextStyle(
+                          color:
+                              isSelected ? Color(0xFF4C9A2A) : Colors.grey[500],
+                          fontSize: 12,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
           ),
-        ],
+        ),
       ),
     );
   }
