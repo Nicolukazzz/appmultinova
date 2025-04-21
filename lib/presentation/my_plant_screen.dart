@@ -160,19 +160,20 @@ class _MyPlantScreenState extends State<MyPlantScreen> {
     return Scaffold(
       backgroundColor: Color(0xfff6f6f6),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.green[600],
         elevation: 0.5,
         centerTitle: true,
         title: Text(
           "Mi Planta",
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Column(
         children: [
           Container(
-            margin: EdgeInsets.symmetric(vertical: 10),
+            margin: EdgeInsets.symmetric(vertical: 25),
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [

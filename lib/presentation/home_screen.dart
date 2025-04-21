@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'my_plant_screen.dart';
-import 'add_plant_screen.dart';
+import 'calendar_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,17 +13,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     MyPlantScreen(),
-    AddPlantScreen(),
+    CalendarScreen(), // reemplaza al antiguo AddPlantScreen
     SettingsScreen(),
   ];
 
   final List<IconData> _icons = [
     Icons.eco_outlined,
-    Icons.add_circle_outline,
+    Icons.calendar_today_outlined, // nuevo ícono de calendario
     Icons.settings_outlined,
   ];
 
-  final List<String> _labels = ['Mi Planta', 'Agregar', 'Ajustes'];
+  final List<String> _labels = ['Mi Planta', 'Calendario', 'Ajustes'];
 
   @override
   Widget build(BuildContext context) {

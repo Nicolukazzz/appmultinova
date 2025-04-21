@@ -241,8 +241,13 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
       appBar: AppBar(
         title: const Text(
           "Conexión Bluetooth",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        centerTitle: true,
         backgroundColor: Colors.green[600],
         elevation: 4,
         actions: [
