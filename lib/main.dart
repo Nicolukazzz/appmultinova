@@ -4,6 +4,8 @@ import 'package:multinova/presentation/bluetooth_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
+import 'package:multinova/presentation/plants_list_screen.dart';
+import 'package:multinova/presentation/plant_detail_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +25,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Multinova',
       theme: ThemeData(primarySwatch: Colors.green),
+      //home: PlantsListScreen(),
       home: HomeScreen(),
+      //home: AddPlantScreen(), // Cambia esto para mostrar la pantalla de agregar planta
     );
   }
 }
