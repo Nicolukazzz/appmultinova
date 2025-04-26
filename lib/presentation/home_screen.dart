@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'my_plant_screen.dart';
 import 'calendar_screen.dart';
 import 'settings_screen.dart';
+import 'my_garden_screen.dart'; // Asegúrate de importar tu pantalla de Mi Jardín
 import 'plants_list_screen.dart'; // Asegúrate de importar tu nueva pantalla aquí
 
 class HomeScreen extends StatefulWidget {
@@ -13,7 +14,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    MyPlantScreen(),
+    MyGardenScreen(), // Pantalla de Mi Jardín
+    //MyPlantScreen(),
     PlantsListScreen(), // <-- Este es el nuevo botón "Agregar"
     CalendarScreen(),
     SettingsScreen(),

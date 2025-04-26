@@ -11,7 +11,6 @@ class PlantsListScreen extends StatefulWidget {
 
 class _PlantsListScreenState extends State<PlantsListScreen> {
   final DatabaseReference _plantsRef = FirebaseDatabase.instance.ref('plants');
-
   Map<String, dynamic> _plants = {};
   bool _isLoading = true;
 
@@ -51,13 +50,11 @@ class _PlantsListScreenState extends State<PlantsListScreen> {
       backgroundColor: const Color(0xfff6f6f6),
       appBar: AppBar(
         backgroundColor: Colors.green[600],
-        elevation: 0.5,
         centerTitle: true,
         title: const Text(
           'Plantas disponibles',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body:
           _isLoading
@@ -72,8 +69,8 @@ class _PlantsListScreenState extends State<PlantsListScreen> {
                   final plant = _plants[key];
 
                   return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      final plantToAdd = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder:
@@ -82,6 +79,18 @@ class _PlantsListScreenState extends State<PlantsListScreen> {
                               ),
                         ),
                       );
+
+                      if (plantToAdd != null) {
+                        final gardenRef = FirebaseDatabase.instance.ref(
+                          'my_garden',
+                        );
+                        await gardenRef.push().set(plantToAdd);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Planta agregada a tu jardín!'),
+                          ),
+                        );
+                      }
                     },
                     child: _buildPlantCard(
                       plant['commonName'] ?? 'Sin nombre',

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 class PlantDetailScreen extends StatelessWidget {
   final Map<Object?, Object?> plantData;
+  final Function(Map<String, dynamic>)? onAddToGarden;
 
-  const PlantDetailScreen({Key? key, required this.plantData})
-    : super(key: key);
+  const PlantDetailScreen({
+    Key? key,
+    required this.plantData,
+    this.onAddToGarden,
+  }) : super(key: key);
 
   // Método para convertir los datos a Map<String, dynamic>
   Map<String, dynamic> get parsedData {
@@ -25,7 +28,7 @@ class PlantDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xfff6f6f6),
       appBar: AppBar(
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.green[600],
         elevation: 0,
         centerTitle: true,
         title: Text(
@@ -38,76 +41,65 @@ class PlantDetailScreen extends StatelessWidget {
         ),
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
-          IconButton(icon: Icon(Icons.favorite_border), onPressed: () {}),
+          IconButton(
+            icon: Icon(Icons.favorite_border, color: Colors.white),
+            onPressed: () {},
+          ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: 80, // Espacio para el botón
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildPlantHeader(scientificName, category),
-                  SizedBox(height: 24),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 16,
+          bottom: onAddToGarden != null ? 80 : 16,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildPlantHeader(scientificName, category),
+            SizedBox(height: 24),
 
-                  _buildSectionTitle('Condiciones Óptimas'),
-                  SizedBox(height: 12),
-                  _buildConditionsGrid(optimalConditions),
-                  SizedBox(height: 24),
+            _buildSectionTitle('Condiciones Óptimas'),
+            SizedBox(height: 12),
+            _buildConditionsGrid(optimalConditions),
+            SizedBox(height: 24),
 
-                  _buildSectionTitle('Cuidados'),
-                  SizedBox(height: 12),
-                  _buildCareTips(careTips),
-                  SizedBox(height: 24),
+            _buildSectionTitle('Cuidados'),
+            SizedBox(height: 12),
+            _buildCareTips(careTips),
+            SizedBox(height: 24),
 
-                  _buildSectionTitle('Entorno Ideal'),
-                  SizedBox(height: 12),
-                  _buildEnvironmentInfo(environment),
-                  SizedBox(height: 24),
-                ],
-              ),
-            ),
-          ),
-          // Botón fijo en la parte inferior
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                top: BorderSide(color: Colors.grey[200]!, width: 1),
-              ),
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[600],
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
+            _buildSectionTitle('Entorno Ideal'),
+            SizedBox(height: 12),
+            _buildEnvironmentInfo(environment),
+            SizedBox(height: 24),
+          ],
+        ),
+      ),
+      floatingActionButton:
+          onAddToGarden != null
+              ? FloatingActionButton.extended(
+                onPressed: () {
+                  onAddToGarden!(parsedData);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Planta agregada a tu jardín'),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+                icon: Icon(Icons.add, color: Colors.white),
+                label: Text(
                   'Agregar a mi jardín',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(color: Colors.white),
                 ),
-              ),
-            ),
-          ),
-        ],
-      ),
+                backgroundColor: Colors.green[600],
+                elevation: 2,
+              )
+              : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -287,7 +279,7 @@ class PlantDetailScreen extends StatelessWidget {
           children: [
             _buildInfoRow(
               '💦 Riego',
-              '${watering['amount'] ?? 'N/A'} ml ${watering['frequency'] ?? 'N/A'}',
+              '${watering['amount'] ?? 'N/A'} ml cada ${watering['frequency'] ?? 'N/A'}',
             ),
             Divider(height: 24, thickness: 1, color: Colors.grey[200]),
             _buildInfoRow('🌱 Tipo de suelo', soilType),
