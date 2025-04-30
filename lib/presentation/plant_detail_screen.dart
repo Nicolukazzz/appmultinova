@@ -2,15 +2,10 @@ import 'package:flutter/material.dart';
 
 class PlantDetailScreen extends StatelessWidget {
   final Map<Object?, Object?> plantData;
-  final Function(Map<String, dynamic>)? onAddToGarden;
 
-  const PlantDetailScreen({
-    Key? key,
-    required this.plantData,
-    this.onAddToGarden,
-  }) : super(key: key);
+  const PlantDetailScreen({Key? key, required this.plantData})
+    : super(key: key);
 
-  // Método para convertir los datos a Map<String, dynamic>
   Map<String, dynamic> get parsedData {
     return plantData.map((key, value) => MapEntry(key.toString(), value));
   }
@@ -33,72 +28,53 @@ class PlantDetailScreen extends StatelessWidget {
         centerTitle: true,
         title: Text(
           commonName,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
         ),
-        iconTheme: IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.favorite_border, color: Colors.white),
-            onPressed: () {},
-          ),
-        ],
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(
+        padding: const EdgeInsets.only(
           left: 16,
           right: 16,
           top: 16,
-          bottom: onAddToGarden != null ? 80 : 16,
+          bottom: 80,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildPlantHeader(scientificName, category),
-            SizedBox(height: 24),
-
+            const SizedBox(height: 24),
             _buildSectionTitle('Condiciones Óptimas'),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             _buildConditionsGrid(optimalConditions),
-            SizedBox(height: 24),
-
+            const SizedBox(height: 24),
             _buildSectionTitle('Cuidados'),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             _buildCareTips(careTips),
-            SizedBox(height: 24),
-
+            const SizedBox(height: 24),
             _buildSectionTitle('Entorno Ideal'),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             _buildEnvironmentInfo(environment),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
           ],
         ),
       ),
-      floatingActionButton:
-          onAddToGarden != null
-              ? FloatingActionButton.extended(
-                onPressed: () {
-                  onAddToGarden!(parsedData);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Planta agregada a tu jardín'),
-                      backgroundColor: Colors.green,
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                },
-                icon: Icon(Icons.add, color: Colors.white),
-                label: Text(
-                  'Agregar a mi jardín',
-                  style: TextStyle(color: Colors.white),
-                ),
-                backgroundColor: Colors.green[600],
-                elevation: 2,
-              )
-              : null,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.pop(context, parsedData);
+        },
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text(
+          'Agregar a mi jardín',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.green[600],
+        elevation: 2,
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
@@ -120,7 +96,7 @@ class PlantDetailScreen extends StatelessWidget {
         side: BorderSide(color: Colors.grey[200]!, width: 1),
       ),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
             Container(
@@ -132,7 +108,7 @@ class PlantDetailScreen extends StatelessWidget {
               ),
               child: Icon(Icons.eco, size: 40, color: Colors.green[600]),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,9 +121,12 @@ class PlantDetailScreen extends StatelessWidget {
                       fontStyle: FontStyle.italic,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.green[100],
                       borderRadius: BorderRadius.circular(20),
@@ -189,7 +168,7 @@ class PlantDetailScreen extends StatelessWidget {
 
     return GridView.count(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 2,
       crossAxisSpacing: 12,
       mainAxisSpacing: 12,
@@ -228,7 +207,7 @@ class PlantDetailScreen extends StatelessWidget {
         side: BorderSide(color: Colors.grey[200]!, width: 1),
       ),
       child: Padding(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -241,12 +220,12 @@ class PlantDetailScreen extends StatelessWidget {
                 color: Colors.green[700],
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               range,
               style: TextStyle(fontSize: 14, color: Colors.grey[700]),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               optimal,
               style: TextStyle(
@@ -274,7 +253,7 @@ class PlantDetailScreen extends StatelessWidget {
         side: BorderSide(color: Colors.grey[200]!, width: 1),
       ),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             _buildInfoRow(
@@ -323,7 +302,7 @@ class PlantDetailScreen extends StatelessWidget {
         side: BorderSide(color: Colors.grey[200]!, width: 1),
       ),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             _buildInfoRow('📍 Zona', _translateZone(zone)),

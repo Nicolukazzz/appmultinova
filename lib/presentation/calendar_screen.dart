@@ -1,8 +1,11 @@
+// Pega este código en tu archivo CalendarScreen.dart
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -16,7 +19,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   DateTime? _selectedDay;
   Map<DateTime, List<Map<String, String>>> _plantEvents = {};
 
-  final List<String> _plantas = ['Planta A', 'Planta B', 'Planta C'];
+  List<String> _plantas = [];
   final List<Map<String, dynamic>> _acciones = [
     {'label': 'Riego', 'icon': Icons.water_drop},
     {'label': 'Cambio de agua', 'icon': Icons.swap_horiz},
@@ -25,11 +28,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
   ];
 
   Set<String> _selectedAcciones = {};
+  final DatabaseReference _gardenRef = FirebaseDatabase.instance.ref(
+    'my_garden',
+  );
 
   @override
   void initState() {
     super.initState();
     _loadEvents();
+    _loadGardenPlants();
+  }
+
+  Future<void> _loadGardenPlants() async {
+    try {
+      final snapshot = await _gardenRef.get();
+      if (snapshot.exists) {
+        final data = Map<String, dynamic>.from(snapshot.value as Map);
+        setState(() {
+          _plantas =
+              data.values
+                  .map<String>(
+                    (p) => p['commonName'] as String? ?? 'Sin nombre',
+                  )
+                  .toList();
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al cargar plantas del jardín: $e')),
+      );
+    }
   }
 
   Future<void> _saveEvents() async {
@@ -285,6 +313,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
         backgroundColor: Colors.green[600],
         elevation: 4,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddActionSheet,
+        backgroundColor: Colors.green[600],
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -326,65 +359,29 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child:
-                  _getEventsForDay(selectedDate).isEmpty
-                      ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(
-                              Icons.event_busy,
-                              color: Colors.grey,
-                              size: 50,
-                            ),
-                            SizedBox(height: 12),
-                            Text(
-                              "No hay acciones registradas.",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                      : ListView.builder(
-                        itemCount: _getEventsForDay(selectedDate).length,
-                        itemBuilder: (context, index) {
-                          final evento = _getEventsForDay(selectedDate)[index];
-                          return GestureDetector(
-                            onLongPress:
-                                () => _showDeleteConfirmation(
-                                  index,
-                                  selectedDate,
-                                ),
-                            child: Card(
-                              elevation: 3,
-                              margin: const EdgeInsets.symmetric(vertical: 6),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: ListTile(
-                                leading: Icon(
-                                  Icons.eco_rounded,
-                                  color: Colors.green[600],
-                                ),
-                                title: Text(evento['accion'] ?? ''),
-                                subtitle: Text("Planta: ${evento['planta']}"),
-                              ),
-                            ),
-                          );
-                        },
+              child: ListView.builder(
+                itemCount: _getEventsForDay(selectedDate).length,
+                itemBuilder: (context, index) {
+                  final event = _getEventsForDay(selectedDate)[index];
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListTile(
+                      title: Text(event['accion'] ?? ''),
+                      subtitle: Text(event['planta'] ?? ''),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.redAccent),
+                        onPressed:
+                            () => _showDeleteConfirmation(index, selectedDate),
                       ),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green[600],
-        foregroundColor: Colors.white,
-        onPressed: _showAddActionSheet,
-        child: const Icon(Icons.add),
       ),
     );
   }
